@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>JN Som Player</title>
+<link rel="manifest" href="/manifest.json" />
 <style>
   :root{
     --bg:#0a0a0a; --bg2:#111; --card:#161616; --line:#222;
@@ -325,5 +326,14 @@ function toggleLike(){
 }
 function goHome(){ cancelNext(); loadHome(); }
 </script>
+  
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Service Worker Registrado!'))
+      .catch((err) => console.log('Erro ao registrar:', err));
+  }
+</script>
+  
 </body>
 </html>
