@@ -1,9 +1,9 @@
 {
   "name": "JN Auto Som Player",
   "short_name": "JN Som",
-  "description": "Player de vídeos do YouTube para centrais multimídia automotivas.",
+  "description": "Player de vídeos automotivo JN Auto Som",
   "start_url": "/index.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
   "orientation": "landscape",
@@ -19,5 +19,14 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "android": {
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.READ_EXTERNAL_STORAGE"
+    ],
+    "features": [
+      "android.hardware.screen.landscape"
+    ]
+  }
 }
