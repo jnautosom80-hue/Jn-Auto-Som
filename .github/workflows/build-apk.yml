@@ -1,0 +1,53 @@
+name: Gerar APK Android Auto
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Baixar codigo do repositorio
+      uses: actions/checkout@v4
+
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Instalar Cordova globalmente
+      run: npm install -g cordova
+
+    - name: Criar projeto temporario Cordova
+      run: |
+        cordova create meu-app com.jnautosom80.meuapp "JN Auto Som"
+        cd meu-app
+        cordova platform add android@12.0.0
+
+    - name: Injetar arquivos HTML e configuracoes do carro
+      run: |
+        rm -rf meu-app/www/*
+        cp -r index.html manifest.json sw.js meu-app/www/ 2>/dev/null || cp -r * meu-app/www/ || true
+        cp config.xml meu-app/config.xml
+        mkdir -p meu-app/platforms/android/app/src/main/res/xml/
+        cp automotive_app_desc.xml meu-app/platforms/android/app/src/main/res/xml/automotive_app_desc.xml
+
+    - name: Configurar Java JDK 11
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+
+    - name: Compilar APK de Teste (Debug)
+      run: |
+        cd meu-app
+        cordova build android --debug
+
+    - name: Disponibilizar APK para Download
+      uses: actions/upload-artifact@v4
+      with:
+        name: jn-auto-som-apk
+        path: meu-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
