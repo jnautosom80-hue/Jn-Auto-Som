@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <widget id="com.jnautosom.meuapp" version="1.0.0" xmlns="http://w3.org" xmlns:android="http://android.com">
-    <name>Meu App Auto</name>
-    <description>Aplicativo de video para Android Auto</description>
-    <author>JN Auto Som</author>
-    
-    <content src="index.html" />
-    <access origin="*" />
-
-    <platform name="android">
-        <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc"/>
-        </config-file>
-        <resource-file src="automotive_app_desc.xml" target="app/src/main/res/xml/automotive_app_desc.xml" />
-    </platform>
+  <name>JN Auto Som App</name>
+  <description>Meu aplicativo de video para Android Auto</description>
+  <author>JN Auto Som</author>
+  <content src="index.html" />
+  <access origin="*" />
+  <platform name="android">
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc"/>
+    </config-file>
+    <resource-file src="automotive_app_desc.xml" target="app/src/main/res/xml/automotive_app_desc.xml" />
+  </platform>
 </widget>
+
 
