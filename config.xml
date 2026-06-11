@@ -1,21 +1,17 @@
-<?xml version='1.0' encoding='utf-8'?>
-<widget id="com.jnautosom80.meuapp" version="1.0.0" xmlns="http://w3.org" xmlns:cdv="http://apache.org" xmlns:android="http://android.com">
+<?xml version="1.0" encoding="UTF-8"?>
+<widget id="com.jnautosom.meuapp" version="1.0.0" xmlns="http://w3.org" xmlns:android="http://android.com">
     <name>Meu App Auto</name>
-    <description>Meu aplicativo para Android Auto</description>
-    <author email="seu-email@exemplo.com">JN Auto Som</author>
+    <description>Aplicativo de video para Android Auto</description>
+    <author>JN Auto Som</author>
     
     <content src="index.html" />
     <access origin="*" />
-    <allow-intent href="http://*/*" />
-    <allow-intent href="https://*/*" />
 
     <platform name="android">
-        <!-- Injeta a permissão necessária para o Android Auto ler o app -->
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc"/>
         </config-file>
-        
-        <!-- Cria o arquivo descritor exigido pela central do carro -->
         <resource-file src="automotive_app_desc.xml" target="app/src/main/res/xml/automotive_app_desc.xml" />
     </platform>
 </widget>
+
