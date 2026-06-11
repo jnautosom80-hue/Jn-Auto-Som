@@ -21,8 +21,14 @@ jobs:
     - name: Instalar Cordova globalmente
       run: npm install -g cordova
 
-    - name: Criar projeto temporario Cordova
+    - name: Criar pasta temporaria de backup
       run: |
+        mkdir -p ../backup_www
+        cp -r * ../backup_www/ || true
+
+    - name: Criar projeto Cordova limpo
+      run: |
+        rm -rf * .github
         cordova create meu-app com.jnautosom80.meuapp "JN Auto Som"
         cd meu-app
         cordova platform add android@12.0.0
@@ -30,10 +36,11 @@ jobs:
     - name: Injetar arquivos HTML e configuracoes do carro
       run: |
         rm -rf meu-app/www/*
-        cp -r index.html manifest.json sw.js meu-app/www/ 2>/dev/null || cp -r * meu-app/www/ || true
-        cp config.xml meu-app/config.xml
+        cp -r ../backup_www/* meu-app/www/ || true
+        rm -f meu-app/www/config.xml meu-app/www/automotive_app_desc.xml
+        cp ../backup_www/config.xml meu-app/config.xml
         mkdir -p meu-app/platforms/android/app/src/main/res/xml/
-        cp automotive_app_desc.xml meu-app/platforms/android/app/src/main/res/xml/automotive_app_desc.xml
+        cp ../backup_www/automotive_app_desc.xml meu-app/platforms/android/app/src/main/res/xml/automotive_app_desc.xml
 
     - name: Configurar Java JDK 11
       uses: actions/setup-java@v4
