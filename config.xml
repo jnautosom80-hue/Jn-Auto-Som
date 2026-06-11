@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.jnautosom80.meuapp" version="1.0.0" xmlns="http://w3.org" xmlns:cdv="http://apache.org">
+<widget id="com.jnautosom80.meuapp" version="1.0.0" xmlns="http://w3.org" xmlns:cdv="http://apache.org" xmlns:android="http://android.com">
     <name>Meu App Auto</name>
     <description>Meu aplicativo para Android Auto</description>
     <author email="seu-email@exemplo.com">JN Auto Som</author>
