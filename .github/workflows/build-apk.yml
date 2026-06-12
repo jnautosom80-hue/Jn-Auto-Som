@@ -13,6 +13,11 @@ jobs:
     - name: Baixar codigo do repositorio
       uses: actions/checkout@v4
 
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
     - name: Configurar Java JDK 17
       uses: actions/setup-java@v4
       with:
@@ -22,88 +27,45 @@ jobs:
     - name: Baixar e Configurar Ferramentas do Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: Construir Estrutura Nativa do Aplicativo
+    - name: Criar Projeto Android Estruturado Oficial
       run: |
-        mkdir -p app/src/main/assets/www
-        mkdir -p app/src/main/res/xml
+        # Cria um projeto limpo usando o CLI oficial do Capacitor que configura o Gradle perfeitamente
+        npm init -y
+        npm install @capacitor/core @capacitor/cli @capacitor/android
         
-        cp index.html app/src/main/assets/www/ 2>/dev/null || true
-        cp manifest.json app/src/main/assets/www/ 2>/dev/null || true
-        cp sw.js app/src/main/assets/www/ 2>/dev/null || true
-        cp *.png app/src/main/assets/www/ 2>/dev/null || true
+        # Cria a pasta www onde vai o seu site e garante o arquivo index principal
+        mkdir -p www
+        cp index.html www/index.html 2>/dev/null || true
+        cp -r * www/ 2>/dev/null || true
+        rm -f www/package.json www/package-lock.json
         
-        cp automotive_app_desc.xml app/src/main/res/xml/automotive_app_desc.xml
+        # Inicializa a estrutura nativa sem pular nenhuma pasta oculta do Google
+        npx cap init "JN Auto Som" "com.jnautosom80.meuapp" --web-dir=www
+        npx cap add android
 
-        cat <<EOF > app/src/main/AndroidManifest.xml
-        <manifest xmlns:android="http://android.com" package="com.jnautosom80.meuapp">
-            <application android:label="JN Auto Som" android:supportsRtl="true">
-                <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc"/>
-                <activity android:name=".MainActivity" android:exported="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-                    <intent-filter>
-                        <action android:name="android.intent.action.MAIN"/>
-                        <category android:name="android.intent.category.LAUNCHER"/>
-                    </intent-filter>
-                </activity>
-            </application>
-        </manifest>
-        EOF
+    - name: Injetar as configuracoes do Android Auto
+      run: |
+        # Localiza o manifesto correto criado pelo sistema e injeta a tag do carro antes do fechamento do app
+        MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
+        sed -i '/<\/application>/i \        <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc"/>' $MANIFEST_PATH
+        
+        # Cria a pasta de recursos XML oficial e copia o descritor do carro
+        mkdir -p android/app/src/main/res/xml/
+        cp automotive_app_desc.xml android/app/src/main/res/xml/automotive_app_desc.xml
 
-        mkdir -p app/src/main/java/com/jnautosom80/meuapp
-        cat <<EOF > app/src/main/java/com/jnautosom80/meuapp/MainActivity.java
-        package com.jnautosom80.meuapp;
-        import android.app.Activity;
-        import android.os.Bundle;
-        import android.webkit.WebView;
-        import android.webkit.WebViewClient;
+    - name: Sincronizar e Dar Permissoes de Compilacao
+      run: |
+        npx cap sync android
+        cd android
+        chmod +x gradlew
 
-        public class MainActivity extends Activity {
-            @Override
-            protected void onCreate(Bundle savedInstanceState) {
-                super.onCreate(savedInstanceState);
-                WebView webView = new WebView(this);
-                webView.getSettings().setJavaScriptEnabled(true);
-                webView.setWebViewClient(new WebViewClient());
-                webView.loadUrl("file:///android_asset/www/index.html");
-                setContentView(webView);
-            }
-        }
-        EOF
-
-        cat <<EOF > build.gradle
-        buildscript {
-            repositories { google() \n mavenCentral() }
-            dependencies { classpath 'com.android.tools.build:gradle:8.2.2' }
-        }
-        allprojects { repositories { google() \n mavenCentral() } }
-        EOF
-
-        cat <<EOF > settings.gradle
-        include ':app'
-        EOF
-
-        cat <<EOF > app/build.gradle
-        plugins { id 'com.android.application' }
-        android {
-            namespace 'com.jnautosom80.meuapp'
-            compileSdk 34
-            defaultConfig {
-                applicationId "com.jnautosom80.meuapp"
-                minSdk 23
-                targetSdk 34
-                versionCode 1
-                versionName "1.0"
-            }
-        }
-        EOF
-
-    - name: Dar permissao de execucao ao Gradle
-      run: gradle wrapper --gradle-version 8.5
-
-    - name: Compilar APK Final Nativo (Debug)
-      run: ./gradlew assembleDebug --no-daemon
+    - name: Compilar APK Final Sem Erros
+      run: |
+        cd android
+        ./gradlew assembleDebug --no-daemon
 
     - name: Disponibilizar APK Oficial para Download
       uses: actions/upload-artifact@v4
       with:
         name: jn-auto-som-apk-oficial
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: android/app/build/outputs/apk/debug/app-debug.apk
